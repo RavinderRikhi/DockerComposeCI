@@ -1,0 +1,20 @@
+version: 2
+jobs: 
+  build: 
+    working_directory: /NodeMongoDockerApp
+  docker:
+    - image: docker:20.10.12-git
+  steps:
+    - checkout
+    - setup_remote_docker
+    - run: 
+        name: Install dependencies
+        command: |
+          apk update 
+          apk add --no-cache py-pip=9.0.0-r1
+          pip install docker-compose==1.24.1 
+    - run:
+        name: Run Tests
+        command: |
+          docker-compose up -d
+          docker-compose run NodeMongoDockerApp npm run test 
