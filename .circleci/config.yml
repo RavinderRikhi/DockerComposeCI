@@ -1,7 +1,7 @@
 version: 2
 jobs: 
   build: 
-    working_directory: /NodeMongoDockerApp
+    working_directory: ~/DockerComposeCI/NodeMongoDockerApp
     docker:
       - image: circleci/node:8.11.1
     steps:
@@ -18,8 +18,3 @@ jobs:
           key: dependency-cache-{{checksum "package-lock.json"}}
           paths:
             - ./node_modules
-      - run:
-          name: Run Tests
-          command: |
-            docker-compose up -d
-            docker-compose run NodeMongoDockerApp npm run test 
