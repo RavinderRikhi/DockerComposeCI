@@ -12,6 +12,9 @@ jobs:
       - run:
           name: update-npm
           command: 'sudo npm install -g npm@latest'
+      - run:    
+          name: Build images of services declared in docker-compose.yml
+          command: docker-compose build
       - run:
           name: run-test
           command: |
