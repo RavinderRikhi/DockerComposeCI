@@ -3,7 +3,7 @@ FROM node:16.13.2-bullseye-slim
 # add a new user admin
 RUN useradd -ms /bin/bash admin
 # set the user as admin since the default user is 'root' which is a security concern
-USER admin
+USER root
 # set the working directory where the code will reside and easy to 
 WORKDIR /NodeMongoDockerApp
 # Copy app code from NodeMongoDockerApp to /NodeMongoDockerApp
