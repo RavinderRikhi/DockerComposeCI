@@ -1,38 +1,20 @@
 version: 2
 jobs: 
   build: 
-    working_directory: ~/DockerComposeCI/NodeMongoDockerApp # set working directory from which you want to run the tests
+    working_directory: ~/DockerComposeCI # set working directory from which you want to run the tests
     docker:
       - image: cimg/node:16.14.2 # this image is specifically required to run node apps on circle ci
     steps:
-      - checkout:
-          path: ~/DockerComposeCI
+      - checkout
+      - setup_remote_docker:    # need this to run docker-compose on remote for this build
+          version: 20.10.7     # add the version number according to the version on local
+          docker_layer_caching: true   # to save excessive docker layer pulls set this to true
       - run:
           name: update-npm
           command: 'sudo npm install -g npm@latest'
-      - restore_cache:
-          key: dependency-cache-{{checksum "package-lock.json"}}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{checksum "package-lock.json"}}
-          paths:
-            - ./node_modules
       - run:
           name: run-test
-          command: npm run test
-      - setup_remote_docker:    # need this to run docker-compose on remote for this build
-          version: 19.03.13     # add the version number according to the version on local
-          docker_layer_caching: true   # to save excessive docker layer pulls set this to true
-      - deploy:
-          name: Publish application docker image
-          # here we are logging into to the docker hub
-          # tagging the build to the circle sha hash for reference and the 'latest'
-          # pushing both the builds to docker hub to my personal account
           command: |
-            docker login -u $DOCKER_HUB_USER_ID -p $DOCKER_HUB_PWD 
-            docker tag dockercomposeci_nodemongodockerapp $DOCKER_HUB_USER_ID/nodemongodockerapp:$CIRCLE_SHA1
-            docker tag dockercomposeci_nodemongodockerapp $DOCKER_HUB_USER_ID/nodemongodockerapp:latest
-            docker push $DOCKER_HUB_USER_ID/nodemongodockerapp:$CIRCLE_SHA1
-            docker push $DOCKER_HUB_USER_ID/nodemongodockerapp:latest
+            docker-compose up -d
+            cd NodeMongoDockerApp
+            npm run test
