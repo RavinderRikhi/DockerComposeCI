@@ -3,7 +3,7 @@ jobs:
   build: 
     working_directory: ~/DockerComposeCI # set working directory from which you want to run the tests
     docker:
-      - image: cimg/node:16.14.2 # this image is specifically required to run node apps on circle ci
+      - image: cimg/base:2022.04 # this image is specifically required to run node apps on circle ci
     steps:
       - checkout # this checkouts the source code from git hub to the working directory it finds
       - setup_remote_docker:    # need this to run docker-compose on remote for this build
