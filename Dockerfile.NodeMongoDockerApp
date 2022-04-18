@@ -10,7 +10,7 @@ WORKDIR /NodeMongoDockerApp
 COPY NodeMongoDockerApp /NodeMongoDockerApp
 # install node packages from package.json and run 
 RUN npm set unsafe-perm true \
-    && npm install
+    && npm ci
 # run the application using the entrypoint index.js when the container is created
 CMD [ "node", "index.js", "--app-port=8888", "--db-url=mongo", "--db-name=Users" ]
 
