@@ -3,18 +3,23 @@ jobs:
   build: 
     working_directory: ~/DockerComposeCI # set working directory from which you want to run the tests
     docker:
-      - image: cimg/node:16.14.2 # this image is specifically required to run node apps on circle ci
+      - image: docker:20.10.12-git # this image is specifically required to run node apps on circle ci
     steps:
       - checkout # this checkouts the source code from git hub to the working directory it finds
       - setup_remote_docker:    # need this to run docker-compose on remote for this build
           version: 20.10.7     # add the version number according to the version on local
           docker_layer_caching: true   # to save excessive docker layer pulls set this to true
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
       - run:    
           name: Build images of services declared in docker-compose.yml
           command: docker-compose up -d
       - run:
           name: run-test
           command: docker-compose run nodemongodockerapp npm run test 
+      - deploy:
+          name: Push application Docker image
+          command: |
+            docker login -u $DOCKER_HUB_USER_ID -p $DOCKER_HUB_PWD
+            docker tag dockercomposeci_nodemongodockerapp $DOCKER_HUB_USER_ID/dockerapp:$CIRCLE_SHA1
+            docker tag dockercomposeci_nodemongodockerapp $DOCKER_HUB_USER_ID/dockerapp:latest
+            docker push $DOCKER_HUB_USER_ID/dockerapp:$CIRCLE_SHA1
+            docker push $DOCKER_HUB_USER_ID/dockerapp:latest

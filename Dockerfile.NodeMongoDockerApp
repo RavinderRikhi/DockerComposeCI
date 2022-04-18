@@ -1,16 +1,16 @@
 # base docker image with already installed node 16.13.2->requirement
-FROM node:16.13.2-bullseye-slim
+FROM node:14.17.0
 # add a new user admin
 RUN useradd -ms /bin/bash admin
 # set the user as admin since the default user is 'root' which is a security concern
-USER root
+USER admin
 # set the working directory where the code will reside and easy to 
 WORKDIR /NodeMongoDockerApp
 # Copy app code from NodeMongoDockerApp to /NodeMongoDockerApp
 COPY NodeMongoDockerApp /NodeMongoDockerApp
 # install node packages from package.json and run 
 RUN npm set unsafe-perm true \
-    && npm ci 
+    && npm install
 # run the application using the entrypoint index.js when the container is created
 CMD [ "node", "index.js", "--app-port=8888", "--db-url=mongo", "--db-name=Users" ]
 
